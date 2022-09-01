@@ -69,4 +69,52 @@ public class productDAO {
 		}
 		return list;
 	}
+	
+	//데이터베이스 입력기능(상품등록) //자바는 세팅이 구할이다.
+	public void insertProduct(productDTO p) {
+		String sql = "insert into product(name, price, pictureurl, description) values (?, ?, ?, ?)";
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, p.getName());
+			pstmt.setInt(2, p.getPrice());
+			pstmt.setString(3, p.getPictureurl());
+			pstmt.setString(4, p.getDescription());
+			pstmt.executeUpdate();
+		}catch(Exception e) {
+			System.out.println("제품 입력 중 오류 발생 : "+e);
+		}finally {
+			productDAO.close(conn, pstmt);
+		}
+	}
+	
+	//데이터베이스 개별 조회기능(개별상품보기)
+	public productDTO selectProduct(String code) {
+		productDTO DTO = null;
+		String sql = "select * from product where code = ?";
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, code);
+			rs = pstmt.executeQuery();
+			if(rs.next()) {
+				DTO = new productDTO();
+				DTO.setCode(rs.getInt("code"));
+				DTO.setName(rs.getString("name"));
+				DTO.setPrice(rs.getInt("price"));
+				DTO.setPictureurl(rs.getString("pictureurl"));
+				DTO.setDescription(rs.getString("description"));
+			}
+		}catch(Exception e) {
+			System.out.println("개별상품 조회 중 오류 발생 : "+e);
+		}finally {
+			productDAO.close(conn, pstmt, rs);
+		}
+		return DTO;
+	}
 }
