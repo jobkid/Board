@@ -34,7 +34,7 @@
 						<td>${product.getName() }</td>
 						<td>${product.getPrice() }원</td>
 						<td><a href = "ProductUpdate?code=${product.getCode()}">수정</a></td>
-						<td>삭제</td>
+						<td><a href = "ProductDelete?code=${product.getCode()}">삭제</a></td>
 					</tr>
 				</c:forEach>	
 			</table>

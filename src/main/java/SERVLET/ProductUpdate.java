@@ -29,7 +29,44 @@ public class ProductUpdate extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		System.out.println("productUpdate.doPost()실행");
+		request.setCharacterEncoding("utf-8");
+		ServletContext context = getServletContext();
+		String path = context.getRealPath("files");
+		System.out.println("업로드 경로 확인 : "+path);
+		
+		
+		String encType = "utf-8";
+		int sizeLimit = 20*1024*1024;
+		
+		MultipartRequest multi = new MultipartRequest(request, path, sizeLimit, encType, new DefaultFileRenamePolicy());
+		String code = multi.getParameter("code");
+		String name = multi.getParameter("name");
+		int price = Integer.parseInt(multi.getParameter("price"));
+		String description = multi.getParameter("description");
+		String pictureurl = multi.getFilesystemName("pictureurl");//파일 이름을 부른다.
+		
 
+		boolean flag = true; //이미지를 바꾸면 true, 안 바꾸면 false
+		if(pictureurl==null) {
+			flag = false;
+			pictureurl=multi.getParameter("nomakeImg");
+		}
+		
+		productDTO DTO = new productDTO();
+		DTO.setCode(Integer.parseInt(code));
+		DTO.setName(name);
+		DTO.setPrice(price);
+		DTO.setDescription(description);
+		if(flag) {
+			DTO.setPictureurl("/files/"+pictureurl);
+		}else {
+			DTO.setPictureurl(pictureurl);
+		}	
+		productDAO DAO = productDAO.getInstance();
+		DAO.updateProduct(DTO);
+		
+		response.sendRedirect("ProductList");
 	}
 
 }

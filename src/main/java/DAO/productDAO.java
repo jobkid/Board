@@ -117,4 +117,43 @@ public class productDAO {
 		}
 		return DTO;
 	}
+	
+	//데이터베이스 수정 기능(상품 수정)
+	public void updateProduct(productDTO DTO) {
+		String sql = "update product set name=?, price=?, pictureurl=?, description=? where code=?";
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, DTO.getName());
+			pstmt.setInt(2, DTO.getPrice());
+			pstmt.setString(3, DTO.getPictureurl());
+			pstmt.setString(4,  DTO.getDescription());
+			pstmt.setInt(5, DTO.getCode());
+			pstmt.executeUpdate();
+		}catch(Exception e) {
+			System.out.println("수정 중 오류 발생 : "+e);
+		}finally {
+			productDAO.close(conn, pstmt);
+		}
+	}
+	
+	//데이터베이스 삭제 기능(상품제거)
+	public void deleteProduct(String code) {
+		String sql = "delete from product where code=?";
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, code);
+			pstmt.executeUpdate();
+			//executeUpdate() : return Integer 변경내역이 여러 줄일 경우에 사용/
+		}catch(Exception e) {
+			System.out.println("상품 삭제 중 오류 발생 : "+e);
+		}finally {
+			productDAO.close(conn, pstmt);
+		}
+	}
 }
